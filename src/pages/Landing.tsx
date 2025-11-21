@@ -1,0 +1,296 @@
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Zap, Target, TrendingUp, Shield, Sparkles, ArrowRight, BarChart3 } from "lucide-react";
+import heroBanner from "@/assets/hero-banner.jpg";
+
+const Landing = () => {
+  return (
+    <div className="min-h-screen bg-animated-gradient overflow-x-hidden">
+      {/* Header */}
+      <header className="fixed top-0 w-full z-50 glass-card border-b border-primary/20">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Sparkles className="w-8 h-8 text-primary animate-pulse-glow" />
+            <h1 className="text-2xl font-orbitron font-bold text-neon">NexInsight AI</h1>
+          </div>
+          <nav className="hidden md:flex items-center space-x-8">
+            <a href="#features" className="text-foreground hover:text-primary transition-colors">Features</a>
+            <a href="#pricing" className="text-foreground hover:text-primary transition-colors">Pricing</a>
+            <a href="#demo" className="text-foreground hover:text-primary transition-colors">Demo</a>
+          </nav>
+          <Link to="/auth">
+            <Button variant="neon" size="lg">
+              Get Started
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 px-6">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8 animate-fade-in">
+              <div className="inline-block">
+                <span className="px-4 py-2 rounded-full glass-card text-sm text-accent font-semibold">
+                  🚀 AI-Powered Intelligence
+                </span>
+              </div>
+              <h1 className="text-5xl md:text-7xl font-orbitron font-bold leading-tight">
+                <span className="text-neon">Smarter</span> Project<br />
+                Decisions & Higher<br />
+                <span className="text-neon-aqua">Win Ratios</span>
+              </h1>
+              <p className="text-xl text-muted-foreground">
+                NexInsight AI analyzes freelancing projects with advanced AI to predict profitability, 
+                assess risks, and maximize your success rate. Win more. Work smarter.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/auth">
+                  <Button variant="neon" size="xl" className="w-full sm:w-auto group">
+                    Start Free Trial
+                    <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Button variant="outline" size="xl" className="w-full sm:w-auto">
+                  Watch Demo
+                </Button>
+              </div>
+              <div className="flex items-center space-x-8 pt-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-neon">89%</div>
+                  <div className="text-sm text-muted-foreground">Avg Win Rate</div>
+                </div>
+                <div className="w-px h-12 bg-border"></div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-neon-aqua">3.2x</div>
+                  <div className="text-sm text-muted-foreground">ROI Boost</div>
+                </div>
+                <div className="w-px h-12 bg-border"></div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-success">12k+</div>
+                  <div className="text-sm text-muted-foreground">Projects Analyzed</div>
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="cyber-border animate-pulse-glow">
+                <div className="cyber-border-inner p-4">
+                  <img 
+                    src={heroBanner} 
+                    alt="NexInsight AI Dashboard"
+                    className="rounded-lg w-full"
+                  />
+                </div>
+              </div>
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary/20 rounded-full blur-3xl animate-float"></div>
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-accent/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4">
+              Cyberpunk-Grade <span className="text-neon">Intelligence</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              AI-powered features that give you the competitive edge in the freelancing marketplace
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Target,
+                title: "AI Win Prediction",
+                description: "Advanced algorithms analyze project history, client behavior, and competition to predict your success probability.",
+                color: "primary"
+              },
+              {
+                icon: TrendingUp,
+                title: "NexScore Analysis",
+                description: "Proprietary scoring system evaluates profitability, effort, and risk for every project opportunity.",
+                color: "accent"
+              },
+              {
+                icon: Shield,
+                title: "Risk Detection",
+                description: "Real-time assessment of payment risks, scope creep, and client reliability with instant alerts.",
+                color: "success"
+              },
+              {
+                icon: BarChart3,
+                title: "Portfolio Insights",
+                description: "Track your win rates, revenue trends, and skill demand with beautiful neon-styled analytics.",
+                color: "primary"
+              },
+              {
+                icon: Zap,
+                title: "Auto-Bid Agent",
+                description: "AI agent submits optimized proposals automatically based on your criteria and availability.",
+                color: "accent"
+              },
+              {
+                icon: Sparkles,
+                title: "Smart Proposals",
+                description: "Generate winning proposals with AI that adapts to client tone, project requirements, and your voice.",
+                color: "success"
+              }
+            ].map((feature, idx) => (
+              <div 
+                key={idx}
+                className="glass-card p-8 hover:scale-105 transition-all duration-300 group cursor-pointer"
+              >
+                <div className={`w-14 h-14 rounded-lg bg-${feature.color}/10 flex items-center justify-center mb-6 group-hover:shadow-glow-purple transition-all`}>
+                  <feature.icon className={`w-7 h-7 text-${feature.color}`} />
+                </div>
+                <h3 className="text-xl font-orbitron font-semibold mb-3 group-hover:text-primary transition-colors">
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4">
+              Choose Your <span className="text-neon-aqua">Power Level</span>
+            </h2>
+            <p className="text-xl text-muted-foreground">Transparent pricing with no hidden costs</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                name: "Freelancer",
+                price: "29",
+                features: ["100 Project Analyses/mo", "Basic Win Prediction", "Email Support", "Portfolio Analytics"],
+                popular: false
+              },
+              {
+                name: "Pro",
+                price: "79",
+                features: ["Unlimited Analyses", "Advanced AI Insights", "Auto-Bid Agent", "Priority Support", "Custom Proposals"],
+                popular: true
+              },
+              {
+                name: "Enterprise",
+                price: "199",
+                features: ["Team Collaboration", "API Access", "White-label Options", "Dedicated Manager", "Custom Integrations"],
+                popular: false
+              }
+            ].map((plan, idx) => (
+              <div 
+                key={idx}
+                className={`glass-card p-8 ${plan.popular ? 'cyber-border scale-105' : ''} hover:scale-105 transition-all duration-300`}
+              >
+                {plan.popular && (
+                  <div className="cyber-border-inner p-8">
+                    <div className="mb-4">
+                      <span className="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full">
+                        MOST POPULAR
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-orbitron font-bold mb-2">{plan.name}</h3>
+                    <div className="mb-6">
+                      <span className="text-5xl font-bold text-neon">${plan.price}</span>
+                      <span className="text-muted-foreground">/month</span>
+                    </div>
+                    <ul className="space-y-3 mb-8">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex items-center text-sm">
+                          <Sparkles className="w-4 h-4 text-primary mr-2" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    <Button variant="neon" className="w-full" size="lg">
+                      Get Started
+                    </Button>
+                  </div>
+                )}
+                {!plan.popular && (
+                  <>
+                    <div className="mb-4 h-6"></div>
+                    <h3 className="text-2xl font-orbitron font-bold mb-2">{plan.name}</h3>
+                    <div className="mb-6">
+                      <span className="text-5xl font-bold">${plan.price}</span>
+                      <span className="text-muted-foreground">/month</span>
+                    </div>
+                    <ul className="space-y-3 mb-8">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex items-center text-sm">
+                          <Sparkles className="w-4 h-4 text-accent mr-2" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    <Button variant="outline" className="w-full" size="lg">
+                      Get Started
+                    </Button>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-6">
+        <div className="container mx-auto">
+          <div className="cyber-border max-w-4xl mx-auto">
+            <div className="cyber-border-inner p-12 text-center">
+              <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-6">
+                Ready to <span className="text-neon">Dominate</span> Your Market?
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Join thousands of freelancers using AI to win more projects and increase revenue
+              </p>
+              <Link to="/auth">
+                <Button variant="neon" size="xl" className="group">
+                  Start Your Free Trial
+                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <p className="text-sm text-muted-foreground mt-4">No credit card required • 14-day free trial</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-primary/20 py-12 px-6">
+        <div className="container mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-3 mb-4 md:mb-0">
+              <Sparkles className="w-6 h-6 text-primary" />
+              <span className="font-orbitron font-bold text-lg">NexInsight AI</span>
+            </div>
+            <div className="flex space-x-6 text-sm text-muted-foreground">
+              <a href="#" className="hover:text-primary transition-colors">Privacy</a>
+              <a href="#" className="hover:text-primary transition-colors">Terms</a>
+              <a href="#" className="hover:text-primary transition-colors">Contact</a>
+            </div>
+          </div>
+          <div className="text-center mt-8 text-sm text-muted-foreground">
+            © 2025 NexInsight AI. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Landing;
