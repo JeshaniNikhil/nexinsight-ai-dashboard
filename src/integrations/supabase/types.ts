@@ -14,16 +14,263 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agent_configs: {
+        Row: {
+          agent_name: string
+          config: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+          user_id: string
+          webhook_url: string | null
+        }
+        Insert: {
+          agent_name: string
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id: string
+          webhook_url?: string | null
+        }
+        Update: {
+          agent_name?: string
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
+      analytics: {
+        Row: {
+          avg_nex_score: number | null
+          created_at: string | null
+          data: Json | null
+          id: string
+          monthly_revenue: number | null
+          total_losses: number | null
+          total_proposals: number | null
+          total_wins: number | null
+          updated_at: string | null
+          user_id: string
+          win_ratio: number | null
+        }
+        Insert: {
+          avg_nex_score?: number | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          monthly_revenue?: number | null
+          total_losses?: number | null
+          total_proposals?: number | null
+          total_wins?: number | null
+          updated_at?: string | null
+          user_id: string
+          win_ratio?: number | null
+        }
+        Update: {
+          avg_nex_score?: number | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          monthly_revenue?: number | null
+          total_losses?: number | null
+          total_proposals?: number | null
+          total_wins?: number | null
+          updated_at?: string | null
+          user_id?: string
+          win_ratio?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company_size: string | null
+          created_at: string | null
+          email: string | null
+          experience_years: number | null
+          full_name: string | null
+          id: string
+          profile_type: string | null
+          skills: string[] | null
+          team_capabilities: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          company_size?: string | null
+          created_at?: string | null
+          email?: string | null
+          experience_years?: number | null
+          full_name?: string | null
+          id: string
+          profile_type?: string | null
+          skills?: string[] | null
+          team_capabilities?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          company_size?: string | null
+          created_at?: string | null
+          email?: string | null
+          experience_years?: number | null
+          full_name?: string | null
+          id?: string
+          profile_type?: string | null
+          skills?: string[] | null
+          team_capabilities?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          ai_insights: Json | null
+          budget_max: number | null
+          budget_min: number | null
+          client_history: string | null
+          client_rating: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          nex_score: number | null
+          platform: string | null
+          project_url: string | null
+          risk_level: string | null
+          skills_required: string[] | null
+          status: string | null
+          title: string
+          updated_at: string | null
+          win_probability: number | null
+        }
+        Insert: {
+          ai_insights?: Json | null
+          budget_max?: number | null
+          budget_min?: number | null
+          client_history?: string | null
+          client_rating?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          nex_score?: number | null
+          platform?: string | null
+          project_url?: string | null
+          risk_level?: string | null
+          skills_required?: string[] | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          win_probability?: number | null
+        }
+        Update: {
+          ai_insights?: Json | null
+          budget_max?: number | null
+          budget_min?: number | null
+          client_history?: string | null
+          client_rating?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          nex_score?: number | null
+          platform?: string | null
+          project_url?: string | null
+          risk_level?: string | null
+          skills_required?: string[] | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          win_probability?: number | null
+        }
+        Relationships: []
+      }
+      proposals: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          project_id: string | null
+          status: string | null
+          submitted_at: string | null
+          tone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          project_id?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          tone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          project_id?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          tone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +397,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
