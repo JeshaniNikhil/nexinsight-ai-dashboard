@@ -1,1 +1,7 @@
 project_id = "cxjywsoxsjoyvuzqxovk"
+
+[functions.webhook-project-sync]
+verify_jwt = false
+
+[functions.webhook-bid-status]
+verify_jwt = false

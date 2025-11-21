@@ -259,7 +259,10 @@ const Dashboard = () => {
           <div className="glass-card p-6 lg:col-span-2">
             <h3 className="text-xl font-orbitron font-semibold mb-6">Quick Actions</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <button className="cyber-border hover:scale-105 transition-all group">
+              <button 
+                className="cyber-border hover:scale-105 transition-all group"
+                onClick={() => navigate("/projects")}
+              >
                 <div className="cyber-border-inner p-6 flex items-center space-x-4">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center group-hover:shadow-glow-purple transition-all">
                     <Target className="w-6 h-6 text-primary" />
@@ -272,7 +275,10 @@ const Dashboard = () => {
                 </div>
               </button>
 
-              <button className="cyber-border hover:scale-105 transition-all group">
+              <button 
+                className="cyber-border hover:scale-105 transition-all group"
+                onClick={() => navigate("/proposal-generator")}
+              >
                 <div className="cyber-border-inner p-6 flex items-center space-x-4">
                   <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center group-hover:shadow-glow-aqua transition-all">
                     <Sparkles className="w-6 h-6 text-accent" />
@@ -285,7 +291,10 @@ const Dashboard = () => {
                 </div>
               </button>
 
-              <button className="cyber-border hover:scale-105 transition-all group">
+              <button 
+                className="cyber-border hover:scale-105 transition-all group"
+                onClick={() => navigate("/agents")}
+              >
                 <div className="cyber-border-inner p-6 flex items-center space-x-4">
                   <div className="w-12 h-12 rounded-lg bg-success/10 flex items-center justify-center group-hover:shadow-glow-green transition-all">
                     <Zap className="w-6 h-6 text-success" />
@@ -298,7 +307,10 @@ const Dashboard = () => {
                 </div>
               </button>
 
-              <button className="cyber-border hover:scale-105 transition-all group">
+              <button 
+                className="cyber-border hover:scale-105 transition-all group"
+                onClick={() => navigate("/analytics")}
+              >
                 <div className="cyber-border-inner p-6 flex items-center space-x-4">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center group-hover:shadow-glow-purple transition-all">
                     <BarChart3 className="w-6 h-6 text-primary" />
