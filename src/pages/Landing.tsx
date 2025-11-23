@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Zap, Target, TrendingUp, Shield, Sparkles, ArrowRight, BarChart3 } from "lucide-react";
 import heroBanner from "@/assets/hero-banner.jpg";
+import nikImage from "@/assets/profile-nik.jpeg";
 
 const Landing = () => {
   return (
@@ -14,9 +19,12 @@ const Landing = () => {
             <h1 className="text-2xl font-orbitron font-bold text-neon">NexInsight AI</h1>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-foreground hover:text-primary transition-colors">Features</a>
-            <a href="#pricing" className="text-foreground hover:text-primary transition-colors">Pricing</a>
-            <a href="#demo" className="text-foreground hover:text-primary transition-colors">Demo</a>
+            <a href="/#features" className="text-foreground hover:text-primary transition-colors">Features</a>
+            <a href="/#pricing" className="text-foreground hover:text-primary transition-colors">Pricing</a>
+            <a href="/#demo" className="text-foreground hover:text-primary transition-colors">Demo</a>
+            <a href="/#about" className="text-foreground hover:text-primary transition-colors">About</a>
+            <a href="/#team" className="text-foreground hover:text-primary transition-colors">Team</a>
+            <a href="/#contact" className="text-foreground hover:text-primary transition-colors">Contact</a>
           </nav>
           <Link to="/auth">
             <Button variant="neon" size="lg">
@@ -52,9 +60,11 @@ const Landing = () => {
                     <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Button variant="outline" size="xl" className="w-full sm:w-auto">
-                  Watch Demo
-                </Button>
+                <Link to="/proposal-generator">
+                  <Button variant="outline" size="xl" className="w-full sm:w-auto">
+                    Watch Demo
+                  </Button>
+                </Link>
               </div>
               <div className="flex items-center space-x-8 pt-4">
                 <div className="text-center">
@@ -170,8 +180,14 @@ const Landing = () => {
             <p className="text-xl text-muted-foreground">Transparent pricing with no hidden costs</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {[
+              {
+                name: "Pay as You Go",
+                priceText: "Pay only for usage",
+                features: ["$0 base fee", "$0.50 per analysis", "No commitment", "Cancel anytime"],
+                popular: false
+              },
               {
                 name: "Freelancer",
                 price: "29",
@@ -204,8 +220,14 @@ const Landing = () => {
                     </div>
                     <h3 className="text-2xl font-orbitron font-bold mb-2">{plan.name}</h3>
                     <div className="mb-6">
-                      <span className="text-5xl font-bold text-neon">${plan.price}</span>
-                      <span className="text-muted-foreground">/month</span>
+                      {"priceText" in plan && plan.priceText ? (
+                        <span className="text-3xl font-bold text-neon">{plan.priceText}</span>
+                      ) : (
+                        <>
+                          <span className="text-5xl font-bold text-neon">${plan.price}</span>
+                          <span className="text-muted-foreground">/month</span>
+                        </>
+                      )}
                     </div>
                     <ul className="space-y-3 mb-8">
                       {plan.features.map((feature, i) => (
@@ -225,8 +247,14 @@ const Landing = () => {
                     <div className="mb-4 h-6"></div>
                     <h3 className="text-2xl font-orbitron font-bold mb-2">{plan.name}</h3>
                     <div className="mb-6">
-                      <span className="text-5xl font-bold">${plan.price}</span>
-                      <span className="text-muted-foreground">/month</span>
+                      {"priceText" in plan && plan.priceText ? (
+                        <span className="text-3xl font-bold">{plan.priceText}</span>
+                      ) : (
+                        <>
+                          <span className="text-5xl font-bold">${plan.price}</span>
+                          <span className="text-muted-foreground">/month</span>
+                        </>
+                      )}
                     </div>
                     <ul className="space-y-3 mb-8">
                       {plan.features.map((feature, i) => (
@@ -243,6 +271,93 @@ const Landing = () => {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-20 px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4">
+              About <span className="text-neon">NexInsight AI</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              We help freelancers and agencies make smarter project decisions with AI-driven insights. Analyze opportunities, assess risks, and maximize win rates.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              { title: "Accuracy", desc: "Proprietary scoring models tuned for service marketplaces." },
+              { title: "Speed", desc: "Evaluate opportunities in seconds, not hours." },
+              { title: "Trust", desc: "Transparent metrics for confident decisions." },
+            ].map((item, i) => (
+              <div key={i} className="glass-card p-8">
+                <h3 className="font-orbitron font-semibold text-xl mb-2">{item.title}</h3>
+                <p className="text-muted-foreground">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section id="team" className="py-20 px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4">
+              Meet the <span className="text-neon-aqua">Team</span>
+            </h2>
+            <p className="text-lg text-muted-foreground">Builders passionate about AI and outcomes.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {[
+              { name: "Nikhil Jesani", role: "CEO", initials: "NJ", img: nikImage },
+              { name: "Alex P.", role: "CTO", initials: "AP", img: "https://i.pravatar.cc/160?u=alex.p" },
+              { name: "Sam R.", role: "CMO", initials: "SR", img: "https://i.pravatar.cc/160?u=sam.r" },
+              { name: "Jordan Lee", role: "COO", initials: "JL", img: "https://i.pravatar.cc/160?u=jordan.lee" },
+              { name: "Morgan Chen", role: "CFO", initials: "MC", img: "https://i.pravatar.cc/160?u=morgan.chen" },
+            ].map((m) => (
+              <div key={m.name} className="glass-card p-8 text-center">
+                <div className="flex justify-center mb-4">
+                  <Avatar className="h-32 w-32">
+                    <AvatarImage src={m.img} alt={m.name} />
+                    <AvatarFallback className="font-orbitron">{m.initials}</AvatarFallback>
+                  </Avatar>
+                </div>
+                <h3 className="text-xl font-orbitron font-semibold">{m.name}</h3>
+                <p className="text-muted-foreground">{m.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4">
+              Contact <span className="text-neon">Us</span>
+            </h2>
+            <p className="text-lg text-muted-foreground">Have questions? Send us a message.</p>
+          </div>
+          <div className="max-w-2xl mx-auto glass-card p-8">
+            <form className="space-y-6">
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" name="name" placeholder="Your name" required />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type="email" placeholder="you@example.com" required />
+              </div>
+              <div>
+                <Label htmlFor="message">Message</Label>
+                <Textarea id="message" name="message" placeholder="How can we help?" rows={5} required />
+              </div>
+              <Button variant="neon" className="w-full" type="submit">Send</Button>
+            </form>
           </div>
         </div>
       </section>
@@ -279,13 +394,13 @@ const Landing = () => {
               <span className="font-orbitron font-bold text-lg">NexInsight AI</span>
             </div>
             <div className="flex space-x-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">Privacy</a>
-              <a href="#" className="hover:text-primary transition-colors">Terms</a>
-              <a href="#" className="hover:text-primary transition-colors">Contact</a>
+              <a href="/#about" className="hover:text-primary transition-colors">About</a>
+              <a href="/#team" className="hover:text-primary transition-colors">Team</a>
+              <a href="/#contact" className="hover:text-primary transition-colors">Contact</a>
             </div>
           </div>
           <div className="text-center mt-8 text-sm text-muted-foreground">
-            © 2025 NexInsight AI. All rights reserved.
+            &copy; 2025 NexInsight AI. All rights reserved.
           </div>
         </div>
       </footer>
