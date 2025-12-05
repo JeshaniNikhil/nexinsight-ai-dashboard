@@ -7,7 +7,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Zap, Target, TrendingUp, Shield, Sparkles, ArrowRight, BarChart3 } from "lucide-react";
 import heroBanner from "@/assets/hero-banner.jpg";
 import nikImage from "@/assets/profile-nik.jpeg";
-
+import khushiImage from "@/assets/profile-khushi.png";
+import priyaImage from "@/assets/profile-priyanshi.jpeg";
+import aakarshImage from "@/assets/profile-aakarsh.jpeg";
+import kavyaImage from "@/assets/profile-kavya.jpeg";
+import gauravImage from "@/assets/profile-gaurav.png";
 const Landing = () => {
   return (
     <div className="min-h-screen bg-animated-gradient overflow-x-hidden">
@@ -16,7 +20,7 @@ const Landing = () => {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Sparkles className="w-8 h-8 text-primary animate-pulse-glow" />
-            <h1 className="text-2xl font-orbitron font-bold text-neon">NexInsight AI</h1>
+            <h1 className="text-2xl font-orbitron font-bold text-neon">Nexinsight AI</h1>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
             <a href="/#features" className="text-foreground hover:text-primary transition-colors">Features</a>
@@ -50,7 +54,7 @@ const Landing = () => {
                 <span className="text-neon-aqua">Win Ratios</span>
               </h1>
               <p className="text-xl text-muted-foreground">
-                NexInsight AI analyzes freelancing projects with advanced AI to predict profitability, 
+                Nexinsight AI analyzes freelancing projects with advanced AI to predict profitability, 
                 assess risks, and maximize your success rate. Win more. Work smarter.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -88,7 +92,7 @@ const Landing = () => {
                 <div className="cyber-border-inner p-4">
                   <img 
                     src={heroBanner} 
-                    alt="NexInsight AI Dashboard"
+                    alt="Nexinsight AI Dashboard"
                     className="rounded-lg w-full"
                   />
                 </div>
@@ -280,7 +284,7 @@ const Landing = () => {
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4">
-              About <span className="text-neon">NexInsight AI</span>
+              About <span className="text-neon">Nexinsight AI</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               We help freelancers and agencies make smarter project decisions with AI-driven insights. Analyze opportunities, assess risks, and maximize win rates.
@@ -313,15 +317,16 @@ const Landing = () => {
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
               { name: "Nikhil Jesani", role: "CEO", initials: "NJ", img: nikImage },
-              { name: "Alex P.", role: "CTO", initials: "AP", img: "https://i.pravatar.cc/160?u=alex.p" },
-              { name: "Sam R.", role: "CMO", initials: "SR", img: "https://i.pravatar.cc/160?u=sam.r" },
-              { name: "Jordan Lee", role: "COO", initials: "JL", img: "https://i.pravatar.cc/160?u=jordan.lee" },
-              { name: "Morgan Chen", role: "CFO", initials: "MC", img: "https://i.pravatar.cc/160?u=morgan.chen" },
+              { name: "Priya Sharma", role: "CTO", initials: "PS", img: priyaImage },
+              { name: "Khushi Pathak", role: "CMO", initials: "KP", img: khushiImage },
+              { name: "Aakarsh Raj Singh", role: "COO", initials: "AR", img: aakarshImage },
+              { name: "Kavya Sharma", role: "CFO", initials: "KS", img: kavyaImage },
+              { name: "Gaurav Chopra", role: "CISO", initials: "GC", img: gauravImage },
             ].map((m) => (
               <div key={m.name} className="glass-card p-8 text-center">
                 <div className="flex justify-center mb-4">
-                  <Avatar className="h-32 w-32">
-                    <AvatarImage src={m.img} alt={m.name} />
+                  <Avatar className="h-40 w-40 md:h-48 md:w-48">
+                    <AvatarImage className="object-contain" src={m.img} alt={m.name} />
                     <AvatarFallback className="font-orbitron">{m.initials}</AvatarFallback>
                   </Avatar>
                 </div>
@@ -391,7 +396,7 @@ const Landing = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-4 md:mb-0">
               <Sparkles className="w-6 h-6 text-primary" />
-              <span className="font-orbitron font-bold text-lg">NexInsight AI</span>
+              <span className="font-orbitron font-bold text-lg">Nexinsight AI</span>
             </div>
             <div className="flex space-x-6 text-sm text-muted-foreground">
               <a href="/#about" className="hover:text-primary transition-colors">About</a>
@@ -400,7 +405,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="text-center mt-8 text-sm text-muted-foreground">
-            &copy; 2025 NexInsight AI. All rights reserved.
+            &copy; 2025 Nexinsight AI. All rights reserved.
           </div>
         </div>
       </footer>

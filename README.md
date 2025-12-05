@@ -1,10 +1,10 @@
-# NexInsight AI Dashboard
+# Nexinsight AI Dashboard
 
 An AI-powered intelligence platform for freelancers to analyze projects, predict win rates, and maximize profitability.
 
 ## Overview
 
-NexInsight AI leverages advanced machine learning algorithms to help freelancers make smarter project decisions by analyzing profitability, assessing risks, and predicting success rates.
+Nexinsight AI leverages advanced machine learning algorithms to help freelancers make smarter project decisions by analyzing profitability, assessing risks, and predicting success rates.
 
 ## Features
 
@@ -40,8 +40,8 @@ This project is built with modern web technologies:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/nexinsight-ai-dashboard.git
-cd nexinsight-ai-dashboard
+git clone https://github.com/your-username/Nexinsight-ai-dashboard.git
+cd Nexinsight-ai-dashboard
 ```
 
 2. Install dependencies:
@@ -125,9 +125,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 For support, please contact:
-- Email: support@nexinsight.ai
-- GitHub Issues: [Create an issue](https://github.com/your-username/nexinsight-ai-dashboard/issues)
+- Email: support@Nexinsight.ai
+- GitHub Issues: [Create an issue](https://github.com/your-username/Nexinsight-ai-dashboard/issues)
 
 ---
 
-© 2025 NexInsight AI. All rights reserved.
+© 2025 Nexinsight AI. All rights reserved.

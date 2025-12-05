@@ -7,6 +7,7 @@ import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
+import ProjectDetail from "./pages/ProjectDetail";
 import ProposalGenerator from "./pages/ProposalGenerator";
 import Agents from "./pages/Agents";
 import Analytics from "./pages/Analytics";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:projectId" element={<ProjectDetail />} />
           <Route path="/proposal-generator" element={<ProposalGenerator />} />
           <Route path="/agents" element={<Agents />} />
           <Route path="/analytics" element={<Analytics />} />

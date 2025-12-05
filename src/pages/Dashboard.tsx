@@ -1,15 +1,53 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { BarChart3, TrendingUp, Target, Zap, ArrowRight, Sparkles } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, RadialBarChart, RadialBar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from "recharts";
+import { toast } from "sonner";
 import type { User, Session } from "@supabase/supabase-js";
+
+interface DashboardAgentConfig {
+  id: string;
+  agent_name: string;
+  webhook_url: string;
+  is_active: boolean;
+}
+
+interface WebhookBid {
+  id: string;
+  title: string;
+  platform?: string;
+  url: string;
+  budget?: string;
+  score?: number;
+  summary?: string;
+  proposal?: string;
+}
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [activeAgent, setActiveAgent] = useState<DashboardAgentConfig | null>(null);
+  const [agentLoading, setAgentLoading] = useState(false);
+  const [companyDetails, setCompanyDetails] = useState({
+    name: "",
+    website: "",
+    focus: "",
+    differentiator: "",
+  });
+  const [isSubmittingCompany, setIsSubmittingCompany] = useState(false);
+  const [insightSummary, setInsightSummary] = useState<string>("");
+  const [insightHighlights, setInsightHighlights] = useState<string[]>([]);
+  const [insightMetrics, setInsightMetrics] = useState<{ label: string; value: string }[]>([]);
+  const [bids, setBids] = useState<WebhookBid[]>([]);
+  const [selectedBidId, setSelectedBidId] = useState<string | null>(null);
+  const [proposalLoadingId, setProposalLoadingId] = useState<string | null>(null);
+  const [insightsGeneratedAt, setInsightsGeneratedAt] = useState<string | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -33,9 +71,253 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  useEffect(() => {
+    if (!user) {
+      setActiveAgent(null);
+      return;
+    }
+
+    const loadActiveAgent = async () => {
+      setAgentLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("agent_configs")
+          .select("id, agent_name, webhook_url, is_active")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(1);
+
+        if (error) throw error;
+
+        setActiveAgent(data && data.length > 0 ? (data[0] as DashboardAgentConfig) : null);
+      } catch (loadError) {
+        console.error("Error loading active agent:", loadError);
+        toast.error("Unable to load active n8n webhook. Please try again.");
+        setActiveAgent(null);
+      } finally {
+        setAgentLoading(false);
+      }
+    };
+
+    loadActiveAgent();
+  }, [user]);
+
+  useEffect(() => {
+    if (selectedBidId && !bids.some((bid) => bid.id === selectedBidId)) {
+      setSelectedBidId(null);
+    }
+  }, [bids, selectedBidId]);
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/");
+  };
+
+  const handleCompanySubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!companyDetails.name.trim() || !companyDetails.focus.trim()) {
+      toast.error("Please provide your company name and primary focus.");
+      return;
+    }
+
+    if (!activeAgent?.webhook_url) {
+      toast.error("No active n8n webhook found. Connect your automation first.");
+      return;
+    }
+
+    setIsSubmittingCompany(true);
+    setInsightSummary("");
+    setInsightHighlights([]);
+    setInsightMetrics([]);
+    setBids([]);
+    setSelectedBidId(null);
+    setInsightsGeneratedAt(null);
+
+    try {
+      const payload = {
+        action: "generate_insights",
+        company: {
+          name: companyDetails.name,
+          website: companyDetails.website,
+          focus: companyDetails.focus,
+          differentiator: companyDetails.differentiator,
+        },
+        user: {
+          id: user?.id,
+          email: user?.email,
+        },
+      };
+
+      const response = await fetch(activeAgent.webhook_url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Webhook responded with status ${response.status}`);
+      }
+
+      const rawText = await response.text();
+      let parsedResponse: any = {};
+      try {
+        parsedResponse = rawText ? JSON.parse(rawText) : {};
+      } catch (parseError) {
+        throw new Error("Received invalid JSON from n8n webhook.");
+      }
+
+      const result = parsedResponse?.data ?? parsedResponse;
+      const insightsSource = result?.insights ?? result?.ai_insights ?? result?.project?.ai_insights ?? null;
+
+      let summary = "";
+      let highlights: string[] = [];
+      let metrics: { label: string; value: string }[] = [];
+
+      if (insightsSource) {
+        if (typeof insightsSource === "string") {
+          summary = insightsSource;
+        } else if (Array.isArray(insightsSource)) {
+          highlights = insightsSource.map((item) => (typeof item === "string" ? item : JSON.stringify(item)));
+        } else if (typeof insightsSource === "object") {
+          if (typeof insightsSource.summary === "string") {
+            summary = insightsSource.summary;
+          }
+
+          if (Array.isArray(insightsSource.highlights)) {
+            highlights = insightsSource.highlights.map((item: unknown) => String(item));
+          }
+
+          if (Array.isArray(insightsSource.metrics)) {
+            metrics = insightsSource.metrics.map((metric: any, index: number) => ({
+              label: String(metric?.label ?? metric?.name ?? metric?.title ?? `Metric ${index + 1}`),
+              value: String(metric?.value ?? metric?.score ?? metric?.amount ?? metric?.percentage ?? "-"),
+            }));
+          } else if (insightsSource.metrics && typeof insightsSource.metrics === "object") {
+            metrics = Object.entries(insightsSource.metrics).map(([label, value]) => ({
+              label,
+              value: String(value),
+            }));
+          }
+
+          if (!summary && insightsSource.overview) {
+            summary = String(insightsSource.overview);
+          }
+        }
+      }
+
+      setInsightSummary(summary);
+      setInsightHighlights(highlights);
+      setInsightMetrics(metrics);
+
+      const bidsSource = result?.top_bids ?? result?.topBids ?? result?.bids ?? result?.opportunities ?? [];
+      if (Array.isArray(bidsSource)) {
+        const normalizedBids: WebhookBid[] = bidsSource.map((bid: any, index: number) => {
+          const url: string = String(bid?.url ?? bid?.link ?? bid?.project_url ?? bid?.href ?? "");
+          const platform = bid?.platform ?? bid?.source ?? (url.includes("upwork") ? "Upwork" : url.includes("fiverr") ? "Fiverr" : undefined);
+          let budget: string | undefined;
+          if (typeof bid?.budget === "string") {
+            budget = bid.budget;
+          } else if (bid?.budget_min && bid?.budget_max) {
+            budget = `$${bid.budget_min} - $${bid.budget_max}`;
+          } else if (bid?.price_range) {
+            budget = String(bid.price_range);
+          }
+
+          const scoreValue = bid?.score ?? bid?.nex_score ?? bid?.win_probability;
+
+          return {
+            id: String(bid?.id ?? bid?.bid_id ?? `bid-${index + 1}`),
+            title: String(bid?.title ?? bid?.name ?? `Opportunity ${index + 1}`),
+            platform,
+            url,
+            budget,
+            score: typeof scoreValue === "number" ? scoreValue : Number(scoreValue) || undefined,
+            summary: typeof bid?.summary === "string" ? bid.summary : bid?.description ?? bid?.brief ?? "",
+            proposal: bid?.proposal ?? bid?.proposal_output ?? bid?.proposal_agent_output ?? bid?.generated_proposal ?? "",
+          };
+        });
+
+        setBids(normalizedBids);
+      } else {
+        setBids([]);
+      }
+
+      setInsightsGeneratedAt(new Date().toISOString());
+      toast.success("Insights generated from your n8n workflow.");
+    } catch (error) {
+      console.error("Error fetching automation insights:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to contact the n8n webhook.");
+    } finally {
+      setIsSubmittingCompany(false);
+    }
+  };
+
+  const handleBidSelect = async (bid: WebhookBid) => {
+    setSelectedBidId((prev) => (prev === bid.id ? prev : bid.id));
+
+    if (bid.proposal) {
+      return;
+    }
+
+    if (!activeAgent?.webhook_url) {
+      toast.error("No active n8n webhook found. Connect your automation first.");
+      return;
+    }
+
+    setProposalLoadingId(bid.id);
+    try {
+      const payload = {
+        action: "generate_proposal",
+        bid,
+        user: {
+          id: user?.id,
+          email: user?.email,
+        },
+      };
+
+      const response = await fetch(activeAgent.webhook_url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Webhook responded with status ${response.status}`);
+      }
+
+      const rawText = await response.text();
+      let parsedResponse: any = {};
+      try {
+        parsedResponse = rawText ? JSON.parse(rawText) : {};
+      } catch (parseError) {
+        throw new Error("Received invalid JSON from proposal agent.");
+      }
+
+      const result = parsedResponse?.data ?? parsedResponse;
+      const proposalText = result?.proposal ?? result?.proposal_output ?? result?.generated_proposal ?? result?.content ?? "";
+
+      if (proposalText) {
+        setBids((prev) =>
+          prev.map((existingBid) =>
+            existingBid.id === bid.id ? { ...existingBid, proposal: proposalText } : existingBid,
+          ),
+        );
+        toast.success("Proposal agent response ready.");
+      } else {
+        toast.error("Proposal agent did not return any content.");
+      }
+    } catch (error) {
+      console.error("Error generating proposal:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to contact the proposal agent.");
+    } finally {
+      setProposalLoadingId(null);
+    }
   };
 
   // Mock data for charts
@@ -74,7 +356,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Sparkles className="w-8 h-8 text-primary animate-pulse-glow" />
-            <h1 className="text-2xl font-orbitron font-bold text-neon">NexInsight AI</h1>
+            <h1 className="text-2xl font-orbitron font-bold text-neon">Nexinsight AI</h1>
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm text-muted-foreground hidden md:block">
@@ -95,6 +377,272 @@ const Dashboard = () => {
           </h2>
           <p className="text-muted-foreground">Your AI intelligence dashboard is ready</p>
         </div>
+
+        {/* Company Intake & Automation */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+          <div className="glass-card p-6 xl:col-span-2">
+            <h3 className="text-xl font-orbitron font-semibold text-neon mb-2">Tell us about your company</h3>
+            <p className="text-sm text-muted-foreground">
+              Share a bit about your company and services. We&apos;ll send this information to your connected n8n workflow
+              to tailor insights and bidding recommendations automatically.
+            </p>
+
+            <form className="mt-6 space-y-5" onSubmit={handleCompanySubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="company-name">Company Name</Label>
+                  <Input
+                    id="company-name"
+                    placeholder="Acme Studios"
+                    value={companyDetails.name}
+                    onChange={(event) => setCompanyDetails((prev) => ({ ...prev, name: event.target.value }))}
+                    className="mt-2 bg-background/50 border-primary/20 focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="company-website">Website</Label>
+                  <Input
+                    id="company-website"
+                    placeholder="https://example.com"
+                    value={companyDetails.website}
+                    onChange={(event) => setCompanyDetails((prev) => ({ ...prev, website: event.target.value }))}
+                    className="mt-2 bg-background/50 border-primary/20 focus:border-primary"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="company-focus">Primary Service Focus</Label>
+                <Input
+                  id="company-focus"
+                  placeholder="e.g. AI-powered web applications"
+                  value={companyDetails.focus}
+                  onChange={(event) => setCompanyDetails((prev) => ({ ...prev, focus: event.target.value }))}
+                  className="mt-2 bg-background/50 border-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="company-differentiator">What makes you different?</Label>
+                <Textarea
+                  id="company-differentiator"
+                  placeholder="Share your strengths, past wins, or delivery approach..."
+                  value={companyDetails.differentiator}
+                  onChange={(event) => setCompanyDetails((prev) => ({ ...prev, differentiator: event.target.value }))}
+                  rows={5}
+                  className="mt-2 bg-background/50 border-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <Button type="submit" className="w-full md:w-auto" disabled={isSubmittingCompany || agentLoading}>
+                {isSubmittingCompany ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-background mr-2"></div>
+                    Sending to n8n...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate Insights
+                  </>
+                )}
+              </Button>
+            </form>
+          </div>
+
+          <div className="glass-card p-6 space-y-4">
+            <h3 className="text-xl font-orbitron font-semibold">Automation Status</h3>
+            {agentLoading ? (
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+                Checking your n8n configuration...
+              </div>
+            ) : activeAgent ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-success text-sm">
+                  <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+                  Active webhook connected
+                </div>
+                <div className="text-xs text-muted-foreground break-all border border-primary/10 rounded-md p-2 bg-background/40">
+                  {activeAgent.webhook_url}
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                No active n8n webhook found for your account. Configure your automation to enable bid insights.
+              </div>
+            )}
+
+            {insightsGeneratedAt && (
+              <div className="text-xs text-muted-foreground">
+                Last synced: {new Date(insightsGeneratedAt).toLocaleString()}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Insights Display */}
+        <div className="glass-card p-6 mb-8">
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <h3 className="text-xl font-orbitron font-semibold">Automation Insights</h3>
+            {insightsGeneratedAt && (
+              <span className="text-xs text-muted-foreground">Updated {new Date(insightsGeneratedAt).toLocaleTimeString()}</span>
+            )}
+          </div>
+
+          {insightSummary || insightHighlights.length > 0 || insightMetrics.length > 0 ? (
+            <div className="space-y-6">
+              {insightSummary && (
+                <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                  {insightSummary}
+                </p>
+              )}
+
+              {insightMetrics.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold text-neon uppercase tracking-wide mb-2">Key Metrics</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {insightMetrics.map((metric, index) => (
+                      <div key={`${metric.label}-${index}`} className="cyber-border">
+                        <div className="cyber-border-inner p-4">
+                          <div className="text-xs text-muted-foreground uppercase tracking-wide">{metric.label}</div>
+                          <div className="text-2xl font-bold text-neon mt-1">{metric.value}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {insightHighlights.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold text-neon uppercase tracking-wide mb-2">Highlights</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {insightHighlights.map((highlight, index) => (
+                      <li key={`${highlight}-${index}`} className="flex items-start gap-2">
+                        <div className="mt-1 w-1.5 h-1.5 rounded-full bg-primary" />
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">
+              Provide your company information to generate tailored insights and recommendations.
+            </div>
+          )}
+        </div>
+
+        {/* Top Bids Display */}
+        <div className="glass-card p-6 mb-8">
+          <h3 className="text-xl font-orbitron font-semibold mb-4">Top Bids from n8n</h3>
+          {bids.length > 0 ? (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {bids.map((bid) => (
+                  <div key={bid.id} className="cyber-border">
+                    <div className="cyber-border-inner p-4 space-y-3">
+                      <div>
+                        <div className="text-sm text-muted-foreground uppercase tracking-wide">{bid.platform ?? "Opportunity"}</div>
+                        <h4 className="text-lg font-semibold text-neon mt-1">{bid.title}</h4>
+                      </div>
+                      {bid.summary && <p className="text-sm text-muted-foreground line-clamp-3">{bid.summary}</p>}
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        {bid.score !== undefined && <span>Score: {Math.round(bid.score)}</span>}
+                        {bid.budget && <span>{bid.budget}</span>}
+                      </div>
+                      <Button
+                        variant={selectedBidId === bid.id ? "default" : "outline"}
+                        className="w-full"
+                        onClick={() => handleBidSelect(bid)}
+                        disabled={proposalLoadingId === bid.id}
+                      >
+                        {proposalLoadingId === bid.id ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-background mr-2"></div>
+                            Generating proposal...
+                          </>
+                        ) : selectedBidId === bid.id ? (
+                          "Viewing proposal"
+                        ) : (
+                          "View proposal"
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">
+              Once your automation returns bid opportunities, they will appear here with direct links and proposal drafts.
+            </div>
+          )}
+        </div>
+
+        {selectedBidId && (
+          (() => {
+            const selectedBid = bids.find((bid) => bid.id === selectedBidId);
+            if (!selectedBid) {
+              return null;
+            }
+
+            return (
+              <div className="glass-card p-6 mb-8">
+                <h3 className="text-xl font-orbitron font-semibold mb-4">Bid Details &amp; Proposal Agent Output</h3>
+                <div className="space-y-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground uppercase tracking-wide">{selectedBid.platform ?? "Opportunity"}</div>
+                    <h4 className="text-2xl font-semibold text-neon mt-1">{selectedBid.title}</h4>
+                  </div>
+
+                  {selectedBid.summary && (
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{selectedBid.summary}</p>
+                  )}
+
+                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                    {selectedBid.score !== undefined && <span>Score: {Math.round(selectedBid.score)}</span>}
+                    {selectedBid.budget && <span>Budget: {selectedBid.budget}</span>}
+                    {selectedBid.url ? (
+                      <a
+                        href={selectedBid.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        Open opportunity
+                      </a>
+                    ) : (
+                      <span>No external link provided</span>
+                    )}
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-neon mb-2">Proposal Agent Output</h4>
+                    {proposalLoadingId === selectedBid.id ? (
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary"></div>
+                        Waiting for agent response...
+                      </div>
+                    ) : selectedBid.proposal ? (
+                      <div className="bg-background/30 border border-primary/20 rounded-lg p-4 max-h-[400px] overflow-y-auto">
+                        <pre className="whitespace-pre-wrap text-sm text-foreground font-sans">
+                          {selectedBid.proposal}
+                        </pre>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground">
+                        Click on "View proposal" to request a tailored proposal from your agent.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -288,22 +836,6 @@ const Dashboard = () => {
                     <div className="text-sm text-muted-foreground">AI-powered writing</div>
                   </div>
                   <ArrowRight className="ml-auto text-accent" />
-                </div>
-              </button>
-
-              <button 
-                className="cyber-border hover:scale-105 transition-all group"
-                onClick={() => navigate("/agents")}
-              >
-                <div className="cyber-border-inner p-6 flex items-center space-x-4">
-                  <div className="w-12 h-12 rounded-lg bg-success/10 flex items-center justify-center group-hover:shadow-glow-green transition-all">
-                    <Zap className="w-6 h-6 text-success" />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-semibold">Auto-Bid Agent</div>
-                    <div className="text-sm text-muted-foreground">Enable automation</div>
-                  </div>
-                  <ArrowRight className="ml-auto text-success" />
                 </div>
               </button>
 

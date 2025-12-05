@@ -7,7 +7,7 @@ const About = () => {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Sparkles className="w-6 h-6 text-primary" />
-            <h1 className="text-xl font-orbitron font-bold">About NexInsight AI</h1>
+            <h1 className="text-xl font-orbitron font-bold">About Nexinsight AI</h1>
           </div>
         </div>
       </header>
@@ -19,7 +19,7 @@ const About = () => {
               Our Mission
             </h2>
             <p className="text-muted-foreground text-lg">
-              NexInsight AI helps freelancers and agencies make smarter project decisions with AI-driven insights. We analyze opportunities, estimate profitability, and reduce risk so you can focus on winning and delivering great work.
+              Nexinsight AI helps freelancers and agencies make smarter project decisions with AI-driven insights. We analyze opportunities, estimate profitability, and reduce risk so you can focus on winning and delivering great work.
             </p>
           </div>
 

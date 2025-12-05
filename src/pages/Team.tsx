@@ -4,10 +4,10 @@ import nikImage from "@/assets/profile-nik.jpeg";
 
 const members = [
   { name: "Nikhil Jesani", role: "CEO", initials: "NJ", img: nikImage },
-  { name: "Alex P.", role: "CTO", initials: "AP", img: "https://i.pravatar.cc/160?u=alex.p" },
-  { name: "Sam R.", role: "CMO", initials: "SR", img: "https://i.pravatar.cc/160?u=sam.r" },
-  { name: "Jordan Lee", role: "COO", initials: "JL", img: "https://i.pravatar.cc/160?u=jordan.lee" },
-  { name: "Morgan Chen", role: "CFO", initials: "MC", img: "https://i.pravatar.cc/160?u=morgan.chen" },
+  { name: "Priya Sharma", role: "CTO", initials: "AP", img: "https://i.pravatar.cc/160?u=alex.p" },
+  { name: "Khushi Pathak", role: "CMO", initials: "SR", img: "https://i.pravatar.cc/160?u=sam.r" },
+  { name: "Aakarsh Raj Singh", role: "COO", initials: "JL", img: "https://i.pravatar.cc/160?u=jordan.lee" },
+  { name: "Kavya Sharma", role: "CFO", initials: "MC", img: "https://i.pravatar.cc/160?u=morgan.chen" },
 ];
 
 const Team = () => {

@@ -58,7 +58,7 @@ const Auth = () => {
         
         toast({
           title: "Welcome back!",
-          description: "Successfully logged in to NexInsight AI",
+          description: "Successfully logged in to Nexinsight AI",
         });
       } else {
         const redirectUrl = `${window.location.origin}/`;
@@ -100,7 +100,7 @@ const Auth = () => {
             {/* Logo */}
             <div className="flex items-center space-x-3 justify-center mb-8">
               <Sparkles className="w-10 h-10 text-primary animate-pulse-glow" />
-              <h1 className="text-3xl font-orbitron font-bold text-neon">NexInsight AI</h1>
+              <h1 className="text-3xl font-orbitron font-bold text-neon">Nexinsight AI</h1>
             </div>
 
             {/* Title */}

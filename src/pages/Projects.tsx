@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { dummyProjectDetails } from "@/data/projects";
 import { Sparkles, Search, Filter, Grid, List, ExternalLink } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
@@ -20,6 +21,22 @@ interface Project {
   risk_level: string;
   project_url: string;
 }
+
+const fallbackProjects: Project[] = dummyProjectDetails.map(
+  ({ id, title, description, platform, budget_min, budget_max, skills_required, nex_score, win_probability, risk_level, project_url }) => ({
+    id,
+    title,
+    description,
+    platform,
+    budget_min,
+    budget_max,
+    skills_required,
+    nex_score,
+    win_probability,
+    risk_level,
+    project_url
+  })
+);
 
 const Projects = () => {
   const navigate = useNavigate();
@@ -62,9 +79,15 @@ const Projects = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setProjects(data || []);
+
+      if (data && data.length > 0) {
+        setProjects(data);
+      } else {
+        setProjects(fallbackProjects);
+      }
     } catch (error) {
       console.error("Error fetching projects:", error);
+      setProjects(fallbackProjects);
     } finally {
       setLoading(false);
     }
@@ -220,7 +243,10 @@ const Projects = () => {
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <Button className="flex-1" size="sm">
+                  <Button className="flex-1" size="sm" onClick={(event) => {
+                    event.stopPropagation();
+                    navigate(`/projects/${project.id}`);
+                  }}>
                     View Details
                   </Button>
                   {project.project_url && (
